@@ -1,5 +1,6 @@
 package com.cpd.chatwrite;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,9 +17,15 @@ public class ChatWriteApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ChatWriteApplication.class, args);
+    }
 
+    @PostConstruct
+    void testWebFlux() {
         WebClient client = WebClient.create("http://localhost:8080/read");
-        var type = new ParameterizedTypeReference<ServerSentEvent<String>>() {};
+        var type = new ParameterizedTypeReference<ServerSentEvent<String>>() {
+        };
+
+        System.out.println("vad sau nu ceva\n");
 
         Flux<ServerSentEvent<String>> eventStream = client.get()
                 .uri("/stream-flux")
