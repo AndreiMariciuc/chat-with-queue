@@ -8,12 +8,12 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-@RabbitListener(queues = "chat-queue")
-@RequiredArgsConstructor
 @Slf4j
+@Service
+@RequiredArgsConstructor
+@RabbitListener(queues = "${rabbitmq.queue}")
 public class MessageReader {
 
     private final RabbitTemplate rabbitTemplate;
