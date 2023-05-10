@@ -27,14 +27,6 @@ public class SubscribeService {
         return sinks.get(id);
     }
 
-    public Sinks.Many<String> getUserSubscription(String username) {
-        return getSubscription(getUserId(username));
-    }
-
-    public Sinks.Many<String> getRoomSubscription(String roomName) {
-        return getSubscription(getRoomId(roomName));
-    }
-
     public Sinks.Many<String> getOrCreateRoom(String roomName) {
         var id = getRoomId(roomName);
 

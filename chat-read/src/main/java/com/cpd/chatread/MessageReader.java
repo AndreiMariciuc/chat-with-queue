@@ -1,35 +1,45 @@
 package com.cpd.chatread;
 
-import com.cpd.chatread.config.RabbitProps;
-import jakarta.annotation.PostConstruct;
+import com.cpd.chatread.models.Message;
+import com.cpd.chatread.services.SubscribeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Sinks;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @RabbitListener(queues = "${rabbitmq.queue}")
 public class MessageReader {
+    private final ObjectMapper jsonConverter = new ObjectMapper();
 
-    private final RabbitTemplate rabbitTemplate;
-    private final RabbitProps rabbitProps;
+    private final SubscribeService subscribeService;
 
     @RabbitHandler
-    private void receiveMsg(String msg) {
-        log.info("am primit un msg " + msg);
-    }
+    private void receiveMsg(String json) {
+        log.info("Am primit un msg " + json);
 
-    @PostConstruct
-    private void seeAllMessages() {
-        Message message = rabbitTemplate.receive(rabbitProps.getQueue());
-        while (message != null) {
-            System.out.println("Received message: " + new String(message.getBody()));
-            message = rabbitTemplate.receive(rabbitProps.getQueue());
+        Message msg;
+        try {
+            msg = jsonConverter.readValue(json, Message.class);
+        } catch (JsonProcessingException e) {
+            log.warn("Could not parse MQ message JSON.");
+            return;
+        }
+
+        for(String to : msg.tos()) {
+            var sink = subscribeService.getSubscription(to);
+            if(sink == null) {
+                log.warn("Unknown identifier: " + to);
+                continue;
+            }
+
+            sink.emitNext(json, Sinks.EmitFailureHandler.FAIL_FAST);
         }
     }
 }

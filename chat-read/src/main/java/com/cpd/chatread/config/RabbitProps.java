@@ -5,8 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 
-@Configuration
 @Data
+@Configuration
 @ConfigurationProperties(prefix = "rabbitmq")
 public class RabbitProps {
     private String queue;
