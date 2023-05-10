@@ -23,7 +23,7 @@ public class App {
             },
             CliParser.OppType.LOGOUT, s -> {
                 log.info("Te-ai delogat ca {}", uname);
-                //ar trebui sa inchid fluxul de comunicare catre write
+                //ar trebui sa inchid fluxul de comunicare catre read
                 uname = null;
             },
             CliParser.OppType.SEND, s -> {
