@@ -27,7 +27,7 @@ public class App {
                 uname = null;
             },
             CliParser.OppType.SEND, s -> {
-                //tre sa fac parsarea! si sa trimit un obiect in http catre write!
+                //tre sa fac parsarea! si sa trimit un obiect in http catre write!??
             },
             CliParser.OppType.ERROR, s -> {
                 log.error("Commanda nu exista!!");
