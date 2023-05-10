@@ -2,35 +2,40 @@ package org.cpd;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.cpd.services.Sender;
+import org.cpd.services.SubscriptionService;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 @Slf4j
 public class App {
 
-    static String uname = null;
+    public static String uname = null;
+
+    private static final SubscriptionService subscriptionService = new SubscriptionService();
+    private static final Sender sender = new Sender();
 
     static Map<CliParser.OppType, Consumer<String>> parseAndActionMap = Map.of(
-            CliParser.OppType.LOGIN, s -> {
-                log.info("Te-ai logat ca {}", s);
-                //ar trebui sa deschid fulxurile de comunicare catre read!
-                uname = s;
+            CliParser.OppType.LOGIN, username -> {
+                log.info("Te-ai logat ca {}", username);
+                subscriptionService.login(username);
+                uname = username;
             },
             CliParser.OppType.LOGOUT, s -> {
                 log.info("Te-ai delogat ca {}", uname);
                 //ar trebui sa inchid fluxul de comunicare catre read
                 uname = null;
             },
-            CliParser.OppType.SEND, s -> {
-                //tre sa fac parsarea! si sa trimit un obiect in http catre write!??
+            CliParser.OppType.SEND, json -> {
+                log.info("Sending {}", json);
+                sender.send(json);
             },
             CliParser.OppType.ERROR, s -> {
-                log.error("Commanda nu exista!!");
+                log.error("Commanda nu exista!! {}", s);
             }
     );
 
@@ -38,11 +43,13 @@ public class App {
         ExecutorService exe = Executors.newSingleThreadExecutor();
 
         while (true) {
-            Future<Pair<CliParser.OppType, String>> inputFuture = exe.submit(CliParser::readInput);
+            var inputFuture = exe.submit(CliParser::readInput);
             var res = inputFuture.get();
             var cons = parseAndActionMap.get(res.first());
             cons.accept(res.second());
         }
+
+//        exe.close();
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {

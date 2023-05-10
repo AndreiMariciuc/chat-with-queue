@@ -13,12 +13,12 @@ public class SubscribeService {
 
     public Flux<String> subscribe(String username) {
         var sink = Sinks.many().unicast().<String>onBackpressureBuffer();
-        sinks.put(getUserId(username), sink);
+        sinks.put(username, sink);
         return sink.asFlux();
     }
 
     public void unsubscribe(String username) {
-        var sink = sinks.remove(getUserId(username));
+        var sink = sinks.remove(username);
         if(sink == null) return;
         sink.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
     }
@@ -28,21 +28,12 @@ public class SubscribeService {
     }
 
     public Sinks.Many<String> getOrCreateRoom(String roomName) {
-        var id = getRoomId(roomName);
 
-        var sink = sinks.get(id);
+        var sink = sinks.get(roomName);
         if(sink != null) return sink;
 
         sink = Sinks.many().multicast().onBackpressureBuffer();
-        sinks.put(id, sink);
+        sinks.put(roomName, sink);
         return sink;
-    }
-
-    private String getRoomId(String roomName) {
-        return "RM_" + roomName;
-    }
-
-    private String getUserId(String username) {
-        return "US_" + username;
     }
 }
