@@ -23,7 +23,7 @@ public class ReadController {
 
     @GetMapping(path = "/stream-flux", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> streamFlux() {
-        var s = Sinks.many().multicast().<String>onBackpressureBuffer();
+        var s = Sinks.many().unicast().<String>onBackpressureBuffer();
 
         sink = s;
 
