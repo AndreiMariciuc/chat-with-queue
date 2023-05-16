@@ -38,4 +38,10 @@ public class ReadController {
         var sink = subscribeService.getOrCreateRoom(roomName);
         return sink.asFlux();
     }
+
+//    @Scheduled(fixedRate = 1000)
+//    void run() {
+//        System.out.println("Am trimis");
+//        sink.emitNext("mai trimit ceva", Sinks.EmitFailureHandler.FAIL_FAST);
+//    }
 }

@@ -39,18 +39,18 @@ public class CliParser {
         var words = line.split(" ");
         var firstWord = words[0];
         var oppType = option.get(firstWord.toLowerCase());
-        if(oppType == null) {
+        if (oppType == null) {
             return new Pair<>(OppType.ERROR, "");
         }
 
         line = line.replaceAll("^[^ ]+ ", "");
 
-        if(words.length == 2) {
+        if (words.length == 2) {
             return new Pair<>(oppType, words[1]);
         }
 
         Matcher m = r.matcher(line);
-        if(!m.find()) {
+        if (!m.find()) {
             return new Pair<>(OppType.ERROR, "matching error");
         }
 
