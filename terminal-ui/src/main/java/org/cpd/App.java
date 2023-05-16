@@ -40,7 +40,7 @@ public class App {
                 sender.send(json);
             },
             CliParser.OppType.ERROR, s -> {
-                log.error("Commanda nu exista!! {}", s);
+                log.info("Commanda nu exista!! {}", s);
             },
             CliParser.OppType.JOIN, roomName -> {
                 if (uname == null) {
@@ -49,6 +49,10 @@ public class App {
                 }
                 log.info("Te-ai logat in camera {}", roomName);
                 subscriptionService.join(roomName);
+            },
+            CliParser.OppType.EXIT, s -> {
+                log.info("Exiting...");
+                System.exit(0);
             }
     );
 

@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import org.cpd.models.Message;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -25,7 +24,8 @@ public class CliParser {
             "lin", OppType.LOGIN,
             "lout", OppType.LOGOUT,
             "logout", OppType.LOGOUT,
-            "join", OppType.JOIN
+            "join", OppType.JOIN,
+            "exit", OppType.EXIT
     );
 
     @SneakyThrows
@@ -45,6 +45,10 @@ public class CliParser {
             return new Pair<>(OppType.ERROR, "");
         }
 
+        if (words.length == 1) {
+            return new Pair<>(oppType, "");
+        }
+
         line = line.replaceAll("^[^ ]+ ", "");
 
         if (words.length == 2) {
@@ -61,6 +65,6 @@ public class CliParser {
     }
 
     enum OppType {
-        LOGIN, LOGOUT, SEND, ERROR, JOIN
+        LOGIN, LOGOUT, SEND, ERROR, JOIN, EXIT
     }
 }
