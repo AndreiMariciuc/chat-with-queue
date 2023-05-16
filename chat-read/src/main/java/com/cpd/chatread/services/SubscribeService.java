@@ -28,7 +28,6 @@ public class SubscribeService {
     }
 
     public Sinks.Many<String> getOrCreateRoom(String roomName) {
-
         var sink = sinks.get(roomName);
         if(sink != null) return sink;
 

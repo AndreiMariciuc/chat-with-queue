@@ -31,11 +31,24 @@ public class App {
                 uname = null;
             },
             CliParser.OppType.SEND, json -> {
+                if (uname == null) {
+                    log.info("Trebuie sa te loghezi mai intai");
+                    return;
+                }
+
                 log.info("Sending {}", json);
                 sender.send(json);
             },
             CliParser.OppType.ERROR, s -> {
                 log.error("Commanda nu exista!! {}", s);
+            },
+            CliParser.OppType.JOIN, roomName -> {
+                if (uname == null) {
+                    log.info("Trebuie sa te loghezi mai intai");
+                    return;
+                }
+                log.info("Te-ai logat in camera {}", roomName);
+                subscriptionService.join(roomName);
             }
     );
 
@@ -53,26 +66,6 @@ public class App {
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-//        WebClient client = WebClient.create("http://localhost:8080/read");
-//        var type = new ParameterizedTypeReference<ServerSentEvent<String>>() {
-//        };
-//
-//
-//        Flux<ServerSentEvent<String>> eventStream = client.get()
-//                .uri("/stream-flux")
-//                .retrieve()
-//                .bodyToFlux(type);
-//
-//        eventStream.subscribe(
-//                content -> log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
-//                        LocalTime.now(), content.event(), content.id(), content.data()),
-//                error -> log.error("Error receiving SSE: {}", error),
-//                () -> log.info("Completed!!!"));
-//
-//        Executors.newSingleThreadExecutor().execute(() -> {
-//            System.out.println("sunt aici");
-//        });
-
         parseCommands();
     }
 }
