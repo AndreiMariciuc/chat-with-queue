@@ -4,10 +4,7 @@ import com.cpd.chatread.services.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
@@ -28,7 +25,7 @@ public class ReadController {
         return subscribeService.subscribe(username);
     }
 
-    @GetMapping(path = "/unsubscribe/{username}")
+    @DeleteMapping(path = "/unsubscribe/{username}")
     public void unsubscribe(@PathVariable String username) {
         subscribeService.unsubscribe(username);
     }
@@ -38,10 +35,4 @@ public class ReadController {
         var sink = subscribeService.getOrCreateRoom(roomName);
         return sink.asFlux();
     }
-
-//    @Scheduled(fixedRate = 1000)
-//    void run() {
-//        System.out.println("Am trimis");
-//        sink.emitNext("mai trimit ceva", Sinks.EmitFailureHandler.FAIL_FAST);
-//    }
 }

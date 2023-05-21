@@ -16,8 +16,9 @@ public class CliParser {
     private final static String pattern = "^((?:[^ ]+,?)+) (.+)";
     private final static Pattern r = Pattern.compile(pattern);
     private final static ObjectMapper jsonConverter = new ObjectMapper();
+    private final static Scanner s = new Scanner(System.in);
 
-    static Map<String, OppType> option = Map.of(
+    static Map<String, OppType> options = Map.of(
             "send", OppType.SEND,
             "s", OppType.SEND,
             "login", OppType.LOGIN,
@@ -30,17 +31,15 @@ public class CliParser {
 
     @SneakyThrows
     public static Pair<OppType, String> readInput() {
-        var s = new Scanner(System.in);
-
         String line = s.nextLine();
-
         if (line == null) {
             return new Pair<>(OppType.ERROR, "");
         }
 
         var words = line.split(" ");
         var firstWord = words[0];
-        var oppType = option.get(firstWord.toLowerCase());
+
+        var oppType = options.get(firstWord.toLowerCase());
         if (oppType == null) {
             return new Pair<>(OppType.ERROR, "");
         }
