@@ -18,7 +18,7 @@ public class App {
 
     private static final SubscriptionService subscriptionService = new SubscriptionService();
     private static final Sender sender = new Sender();
-    private static boolean shouldExit;
+    private static boolean shouldExit = false;
 
     static Map<CliParser.OppType, Consumer<String>> parseAndActionMap = Map.of(
             CliParser.OppType.LOGIN, username -> {
@@ -29,7 +29,7 @@ public class App {
             CliParser.OppType.LOGOUT, s -> {
                 log.info("Te-ai delogat ca {}", uname);
                 subscriptionService.logout(uname);
-                // ar trebui deconectat si de la camere
+                subscriptionService.leaveRooms();
                 uname = null;
             },
             CliParser.OppType.SEND, json -> {
@@ -54,6 +54,7 @@ public class App {
                 log.info("Exiting...");
                 shouldExit = true;
                 subscriptionService.logout(uname);
+                subscriptionService.leaveRooms();
             }
     );
 

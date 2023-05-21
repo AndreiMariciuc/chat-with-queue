@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class SubscriptionService {
@@ -22,6 +24,8 @@ public class SubscriptionService {
 
     private final static ObjectMapper jsonConverter = new ObjectMapper();
     private final WebClient client;
+
+    private final List<String> rooms = new ArrayList<>();
 
     public SubscriptionService() {
         client = WebClient.create("http://localhost:8080/read");
@@ -60,6 +64,7 @@ public class SubscriptionService {
     }
 
     public void join(String roomName) {
+        rooms.add(roomName);
         Flux<ServerSentEvent<String>> eventStream = client.get()
                 .uri("/join/" + roomName)
                 .retrieve()
@@ -67,8 +72,8 @@ public class SubscriptionService {
 
         eventStream.subscribe(
                 content -> {
-                    // de scos dupa ce facem exit din camere la logout
                     if(App.uname == null) return;
+                    if(!rooms.contains(roomName)) return;
                     try {
                         var json = content.data();
                         var msg = jsonConverter.readValue(json, Message.class);
@@ -80,8 +85,15 @@ public class SubscriptionService {
                         log.error("Could not parse message: {}", e.getMessage());
                     }
                 },
-                error -> log.error("Error receiving SSE: {}", error.getMessage()),
+                error -> {
+                    log.error("Error receiving SSE: {}", error.getMessage());
+                    rooms.remove(roomName);
+                },
                 () -> log.info("Successfully closed stream for room: {} !!!", roomName)
         );
+    }
+
+    public void leaveRooms() {
+        rooms.clear();
     }
 }
